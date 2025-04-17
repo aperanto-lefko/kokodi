@@ -1,0 +1,29 @@
+services:
+  game-db:
+    image: postgres:16.1
+    container_name: game-db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=game-db
+      - POSTGRES_USER=game
+      - POSTGRES_PASSWORD=game
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+  auth-db:
+    image: postgres:16.1
+    container_name: auth-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=auth-db
+      - POSTGRES_USER=auth
+      - POSTGRES_PASSWORD=auth
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
