@@ -11,8 +11,8 @@ spring:
       server:
         native:
           search-locations:
-            - classpath:config/auth_service/{application}
-            - classpath:config/game_service/{application}
+            - classpath:config/{application}
+
 eureka:
   client:
     serviceUrl:
