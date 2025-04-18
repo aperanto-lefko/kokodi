@@ -17,7 +17,7 @@ services:
     image: postgres:16.1
     container_name: auth-db
     ports:
-      - "5432:5432"
+      - "5435:5432"
     environment:
       - POSTGRES_DB=auth-db
       - POSTGRES_USER=auth
