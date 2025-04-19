@@ -16,3 +16,13 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+feign:
+  client:
+    config:
+      auth-service:
+        url: http://auth-service:8080 #переделать
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:defaultSecretKey}
+    expiration: 86400000 # 24 hours
