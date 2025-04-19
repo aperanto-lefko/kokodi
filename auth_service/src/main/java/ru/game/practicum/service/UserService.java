@@ -1,5 +1,6 @@
 package ru.game.practicum.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User register(RegisterRequest request) {
+    @Transactional
+    public void register(RegisterRequest request) {
         if (userRepository.existsByLogin(request.getLogin())) {
             throw new UserAlreadyExistsException(request.getLogin());
         }
@@ -25,6 +27,6 @@ public class UserService {
                 .name(request.getName())
                 .build();
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 }

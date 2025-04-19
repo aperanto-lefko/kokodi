@@ -5,11 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,10 +23,11 @@ import ru.game.practicum.security.JwtAuthFilter;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtAuthFilter jwtAuthFilter;
+    private final UserDetailsService userDetailsService;
 
     @Bean
-    @Profile("!test")
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -37,22 +41,13 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-    @Bean
-    @Profile("test") // Специальная конфигурация для тестов
-    public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Разрешаем все запросы в тестах
-                )
-                .build();
-    }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration
-    ) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager() throws Exception {
+        var authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return new ProviderManager(authProvider);
     }
 
     @Bean
