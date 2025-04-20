@@ -65,6 +65,7 @@ public class CardService { //работа с картами и их эффект
     }
 
     //реализация действия карты action в зависимости от назначения
+    //TODO переделать на фабрику
     private void applyActionCardEffect(GameSession gameSession, Player currentPlayer, ActionCard card) {
         switch (card.getName()) {
             case "Block":

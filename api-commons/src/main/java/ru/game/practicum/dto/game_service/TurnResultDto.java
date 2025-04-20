@@ -2,7 +2,6 @@ package ru.game.practicum.dto.game_service;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.game.practicum.entity.GameState;
 
 import java.util.UUID;
 
