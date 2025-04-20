@@ -32,6 +32,7 @@ public class GameSessionService { //управление игровыми сес
     PlayerRepository playerRepository;
     CardRepository cardRepository;
     AuthServiceClient authServiceClient;
+
     public GameSession createGameSession(String userId) {
         UserDto user = authServiceClient.getUser(userId);
 

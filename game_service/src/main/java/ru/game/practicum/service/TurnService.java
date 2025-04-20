@@ -4,11 +4,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import ru.game.practicum.dto.TurnResultDto;
 import ru.game.practicum.entity.Card;
 import ru.game.practicum.entity.GameSession;
 import ru.game.practicum.entity.GameState;
 import ru.game.practicum.entity.Player;
 import ru.game.practicum.entity.Turn;
+import ru.game.practicum.entity.TurnResult;
 import ru.game.practicum.exception.EmptyDeckException;
 import ru.game.practicum.exception.GameSessionNotFoundException;
 import ru.game.practicum.exception.GameSessionNotInProgressException;
@@ -24,10 +26,10 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TurnService { //обработка ходов игроков
     GameSessionRepository gameSessionRepository;
-    CardRepository cardRepository;
     TurnRepository turnRepository;
     CardService cardService;
-    public GameSession makeTurn(UUID gameSessionId, String userId) {
+
+    public TurnResult makeTurn(UUID gameSessionId, String userId) {
         GameSession gameSession = gameSessionRepository.findById(gameSessionId)
                 .orElseThrow(() -> new GameSessionNotFoundException(gameSessionId));
 
@@ -52,8 +54,16 @@ public class TurnService { //обработка ходов игроков
                 .playedCard(card)
                 .build();
         turnRepository.save(turn);
-
         // добавляем эффект карты
-        return cardService.applyCardEffect(gameSessionId, userId, card);
+        cardService.applyCardEffect(gameSessionId, userId, card);
+
+        return TurnResult.builder()
+                .turn(turn)
+                .currentPlayer(currentPlayer)
+                .gameState(gameSession.getState())
+                .nextPlayerId(gameSession.getPlayers()
+                        .get(gameSession.getCurrentPlayerIndex())
+                        .getUserId())
+                .build();
     }
 }

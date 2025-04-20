@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.game.practicum.dto.GameSessionDto;
+import ru.game.practicum.dto.TurnResultDto;
 import ru.game.practicum.entity.GameSession;
+import ru.game.practicum.entity.TurnResult;
+import ru.game.practicum.mapper.TurnResultMapper;
 import ru.game.practicum.service.TurnService;
 
 import java.util.UUID;
@@ -20,13 +23,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TurnController {
-   TurnService turnService;
+    TurnService turnService;
+    TurnResultMapper turnResultMapper;
 
     @PostMapping
-    public ResponseEntity<GameSessionDto> makeTurn(
+    public ResponseEntity<TurnResultDto> makeTurn(
             @PathVariable UUID gameId,
             @RequestHeader("X-User-Id") String userId) {
-        GameSession gameSession = turnService.makeTurn(gameId, userId);
-        return ResponseEntity.ok(toDto(gameSession));
+        TurnResult turnResult = turnService.makeTurn(gameId, userId);
+        return ResponseEntity.ok(turnResultMapper.toDto(turnResult));
     }
 }
