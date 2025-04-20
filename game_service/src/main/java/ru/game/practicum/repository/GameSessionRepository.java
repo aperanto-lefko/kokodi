@@ -10,5 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface GameSessionRepository extends JpaRepository<GameSession, UUID> {
-    List<GameSession> findByState(GameState state);
+
 }

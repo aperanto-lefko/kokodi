@@ -28,6 +28,6 @@ public class Player {
     @ManyToOne
     @JoinColumn(name = "game_session_id")
     private GameSession gameSession;
-    private Integer score;
+    private Integer score; //очки
     private boolean blocked;
 }

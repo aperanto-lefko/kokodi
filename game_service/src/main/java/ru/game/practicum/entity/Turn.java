@@ -21,7 +21,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Turn {
+public class Turn { //Ход
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

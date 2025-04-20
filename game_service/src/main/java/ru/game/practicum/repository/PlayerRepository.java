@@ -9,6 +9,5 @@ import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface PlayerRepository extends JpaRepository<Player, UUID> {
-    List<Player> findByGameSessionId(UUID gameSessionId);
-    Optional<Player> findByUserIdAndGameSessionId(String userId, UUID gameSessionId);
+
 }
