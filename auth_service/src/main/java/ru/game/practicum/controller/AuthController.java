@@ -32,9 +32,9 @@ public class AuthController {
     UserMapper userMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
-        userService.register(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UserDto> register(@Valid @RequestBody RegisterRequest request) {
+        User user = userService.register(request);
+        return ResponseEntity.ok(userMapper.toDto(user));
     }
 
     @PostMapping("/login")

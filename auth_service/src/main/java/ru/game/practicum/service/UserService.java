@@ -16,7 +16,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void register(RegisterRequest request) {
+    public User register(RegisterRequest request) {
         if (userRepository.existsByLogin(request.getLogin())) {
             throw new UserAlreadyExistsException(request.getLogin());
         }
@@ -27,6 +27,6 @@ public class UserService {
                 .name(request.getName())
                 .build();
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }
