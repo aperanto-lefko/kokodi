@@ -4,10 +4,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.game.practicum.entity.ActionCard;
 import ru.game.practicum.entity.Card;
 import ru.game.practicum.entity.GameSession;
-import ru.game.practicum.entity.GameState;
+import ru.game.practicum.dto.game_service.GameState;
 import ru.game.practicum.entity.Player;
 import ru.game.practicum.entity.PointsCard;
 import ru.game.practicum.exception.GameSessionNotFoundException;
@@ -23,11 +24,13 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Transactional(readOnly = true)
 public class CardService { //работа с картами и их эффектами
     GameSessionRepository gameSessionRepository;
     PlayerRepository playerRepository;
 
-    public GameSession applyCardEffect(UUID gameSessionId, String userId, Card card) {
+    @Transactional
+    public GameSession applyCardEffect(UUID gameSessionId, UUID userId, Card card) {
         GameSession gameSession = gameSessionRepository.findById(gameSessionId) //проверка сессии игры
                 .orElseThrow(() -> new GameSessionNotFoundException(gameSessionId));
 
@@ -53,12 +56,15 @@ public class CardService { //работа с картами и их эффект
 
         return gameSessionRepository.save(gameSession);
     }
-//подсчет очков за карту
+
+    //подсчет очков за карту
+    @Transactional
     private void applyPointsCardEffect(Player player, PointsCard card) {
         player.setScore(player.getScore() + card.getValue());
         playerRepository.save(player);
     }
-//реализация действия карты action в зависимости от назначения
+
+    //реализация действия карты action в зависимости от назначения
     private void applyActionCardEffect(GameSession gameSession, Player currentPlayer, ActionCard card) {
         switch (card.getName()) {
             case "Block":
@@ -83,7 +89,7 @@ public class CardService { //работа с картами и их эффект
     }
 
     private void applyStealEffect(GameSession gameSession, Player currentPlayer, int value) {
-              Player targetPlayer = gameSession.getPlayers().stream()
+        Player targetPlayer = gameSession.getPlayers().stream()
                 .filter(p -> !p.getUserId().equals(currentPlayer.getUserId()))
                 .max(Comparator.comparingInt(Player::getScore))
                 .orElseThrow(NoPlayersToStealFromException::new);

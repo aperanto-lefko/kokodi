@@ -4,10 +4,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-import ru.game.practicum.dto.TurnResultDto;
+import org.springframework.transaction.annotation.Transactional;
 import ru.game.practicum.entity.Card;
 import ru.game.practicum.entity.GameSession;
-import ru.game.practicum.entity.GameState;
+import ru.game.practicum.dto.game_service.GameState;
 import ru.game.practicum.entity.Player;
 import ru.game.practicum.entity.Turn;
 import ru.game.practicum.entity.TurnResult;
@@ -15,7 +15,6 @@ import ru.game.practicum.exception.EmptyDeckException;
 import ru.game.practicum.exception.GameSessionNotFoundException;
 import ru.game.practicum.exception.GameSessionNotInProgressException;
 import ru.game.practicum.exception.NotPlayerTurnException;
-import ru.game.practicum.repository.CardRepository;
 import ru.game.practicum.repository.GameSessionRepository;
 import ru.game.practicum.repository.TurnRepository;
 
@@ -24,12 +23,14 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Transactional(readOnly = true)
 public class TurnService { //обработка ходов игроков
     GameSessionRepository gameSessionRepository;
     TurnRepository turnRepository;
     CardService cardService;
 
-    public TurnResult makeTurn(UUID gameSessionId, String userId) {
+    @Transactional
+    public TurnResult makeTurn(UUID gameSessionId, UUID userId) {
         GameSession gameSession = gameSessionRepository.findById(gameSessionId)
                 .orElseThrow(() -> new GameSessionNotFoundException(gameSessionId));
 
@@ -48,7 +49,7 @@ public class TurnService { //обработка ходов игроков
 
         Card card = gameSession.getDeck().get(0); //берем следующую карту
 
-         Turn turn = Turn.builder() //фиксируем ход
+        Turn turn = Turn.builder() //фиксируем ход
                 .gameSession(gameSession)
                 .player(currentPlayer)
                 .playedCard(card)

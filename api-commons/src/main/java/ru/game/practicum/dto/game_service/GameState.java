@@ -1,4 +1,4 @@
-package ru.game.practicum.entity;
+package ru.game.practicum.dto.game_service;
 
 public enum GameState {
     WAITING_FOR_PLAYERS,

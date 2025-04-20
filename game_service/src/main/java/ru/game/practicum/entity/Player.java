@@ -24,7 +24,7 @@ public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String userId; // Ссылка на пользователя из auth-service
+    private UUID userId; // Ссылка на пользователя из auth-service
     @ManyToOne
     @JoinColumn(name = "game_session_id")
     private GameSession gameSession;

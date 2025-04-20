@@ -1,25 +1,35 @@
 package ru.game.practicum.controller;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.game.practicum.dto.AuthRequest;
-import ru.game.practicum.dto.AuthResponse;
-import ru.game.practicum.dto.RegisterRequest;
+import ru.game.practicum.dto.auth_service.AuthRequest;
+import ru.game.practicum.dto.auth_service.AuthResponse;
+import ru.game.practicum.dto.auth_service.RegisterRequest;
+import ru.game.practicum.dto.auth_service.UserDto;
+import ru.game.practicum.entity.User;
+import ru.game.practicum.mapper.UserMapper;
 import ru.game.practicum.service.AuthService;
 import ru.game.practicum.service.UserService;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthController {
-
-    private final AuthService authService;
-    private final UserService userService;
+    AuthService authService;
+    UserService userService;
+    UserMapper userMapper;
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
@@ -32,5 +42,10 @@ public class AuthController {
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
-    //реализовать feign клиент для запроса пользователя по id
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<UserDto> getUser(@PathVariable("userId") UUID userId) {
+        User user = authService.getUserById(userId);
+        return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
 }

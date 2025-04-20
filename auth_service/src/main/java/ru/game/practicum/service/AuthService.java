@@ -8,11 +8,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import ru.game.practicum.dto.AuthRequest;
-import ru.game.practicum.dto.AuthResponse;
+import ru.game.practicum.dto.auth_service.AuthRequest;
+import ru.game.practicum.dto.auth_service.AuthResponse;
+import ru.game.practicum.entity.User;
 import ru.game.practicum.exception.InvalidCredentialsException;
+import ru.game.practicum.exception.UserNotFoundException;
 import ru.game.practicum.repository.UserRepository;
 import ru.game.practicum.security.JwtProvider;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +46,10 @@ public class AuthService {
         } catch (Exception e) {
             throw new InvalidCredentialsException();
         }
+    }
+
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
     }
 }

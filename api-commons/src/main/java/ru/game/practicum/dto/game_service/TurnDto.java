@@ -1,4 +1,4 @@
-package ru.game.practicum.dto;
+package ru.game.practicum.dto.game_service;
 
 import lombok.Builder;
 import lombok.Data;

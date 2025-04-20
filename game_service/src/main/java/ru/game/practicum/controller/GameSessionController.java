@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.game.practicum.dto.GameSessionDto;
+import ru.game.practicum.dto.game_service.GameSessionDto;
 import ru.game.practicum.entity.GameSession;
 import ru.game.practicum.mapper.GameSessionMapper;
 import ru.game.practicum.service.GameSessionService;
@@ -27,7 +27,7 @@ public class GameSessionController {
 
     @PostMapping
     public ResponseEntity<GameSessionDto> createGameSession(@RequestHeader("X-User-Id") String userId) {
-        GameSession gameSession = gameSessionService.createGameSession(userId);
+        GameSession gameSession = gameSessionService.createGameSession(toUUID(userId));
         return ResponseEntity.ok(gameSessionMapper.toDto(gameSession));
     }
 
@@ -35,7 +35,7 @@ public class GameSessionController {
     public ResponseEntity<GameSessionDto> joinGameSession(
             @PathVariable UUID gameId,
             @RequestHeader("X-User-Id") String userId) {
-        GameSession gameSession = gameSessionService.joinGameSession(gameId, userId);
+        GameSession gameSession = gameSessionService.joinGameSession(gameId, toUUID(userId));
         return ResponseEntity.ok(gameSessionMapper.toDto(gameSession));
     }
 
@@ -43,7 +43,7 @@ public class GameSessionController {
     public ResponseEntity<GameSessionDto> startGameSession(
             @PathVariable UUID gameId,
             @RequestHeader("X-User-Id") String userId) {
-        GameSession gameSession = gameSessionService.startGameSession(gameId, userId);
+        GameSession gameSession = gameSessionService.startGameSession(gameId, toUUID(userId));
         return ResponseEntity.ok(gameSessionMapper.toDto(gameSession));
     }
 
@@ -51,5 +51,8 @@ public class GameSessionController {
     public ResponseEntity<GameSessionDto> getGameSessionStatus(@PathVariable UUID gameId) {
         GameSession gameSession = gameSessionService.getGameSessionStatus(gameId);
         return ResponseEntity.ok(gameSessionMapper.toDto(gameSession));
+    }
+    private static UUID toUUID (String uuid) {
+        return UUID.fromString(uuid);
     }
 }

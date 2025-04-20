@@ -12,6 +12,7 @@
         <module>auth_service</module>
         <module>game_service</module>
         <module>infra</module>
+        <module>api-commons</module>
     </modules>
 
     <properties>
@@ -53,7 +54,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
 
         <!-- JWT -->
         <dependency>

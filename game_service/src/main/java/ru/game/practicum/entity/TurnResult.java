@@ -2,7 +2,7 @@ package ru.game.practicum.entity;
 
 import lombok.Builder;
 import lombok.Data;
-
+import ru.game.practicum.dto.game_service.GameState;
 
 import java.util.UUID;
 
@@ -12,6 +12,6 @@ public class TurnResult {
     private Turn turn;
     private Player currentPlayer;
     private GameState gameState;
-    private String nextPlayerId;
+    private UUID nextPlayerId;
 }
 

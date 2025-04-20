@@ -4,10 +4,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.game.practicum.dto.auth_service.UserDto;
 import ru.game.practicum.entity.ActionCard;
 import ru.game.practicum.entity.Card;
 import ru.game.practicum.entity.GameSession;
-import ru.game.practicum.entity.GameState;
+import ru.game.practicum.dto.game_service.GameState;
 import ru.game.practicum.entity.Player;
 import ru.game.practicum.entity.PointsCard;
 import ru.game.practicum.exception.GameSessionAlreadyStartedException;
@@ -15,9 +17,9 @@ import ru.game.practicum.exception.GameSessionFullException;
 import ru.game.practicum.exception.GameSessionNotFoundException;
 import ru.game.practicum.exception.NotEnoughPlayersException;
 import ru.game.practicum.exception.NotGameSessionOwnerException;
-import ru.game.practicum.repository.CardRepository;
+import ru.game.practicum.feign.AuthServiceClient;
 import ru.game.practicum.repository.GameSessionRepository;
-import ru.game.practicum.repository.PlayerRepository;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,14 +29,13 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Transactional(readOnly = true)
 public class GameSessionService { //управление игровыми сессиями
     GameSessionRepository gameSessionRepository;
-    PlayerRepository playerRepository;
-    CardRepository cardRepository;
     AuthServiceClient authServiceClient;
-
-    public GameSession createGameSession(String userId) {
-        UserDto user = authServiceClient.getUser(userId);
+@Transactional
+    public GameSession createGameSession(UUID userId) {
+        UserDto user = authServiceClient.getUser(userId).getBody();
 
         GameSession gameSession = GameSession.builder()
                 .state(GameState.WAITING_FOR_PLAYERS)
@@ -54,8 +55,8 @@ public class GameSessionService { //управление игровыми сес
         gameSession.getPlayers().add(creator);
         return gameSessionRepository.save(gameSession);
     }
-
-    public GameSession joinGameSession(UUID gameSessionId, String userId) {
+@Transactional
+    public GameSession joinGameSession(UUID gameSessionId, UUID userId) {
         GameSession gameSession = gameSessionRepository.findById(gameSessionId)
                 .orElseThrow(() -> new GameSessionNotFoundException(gameSessionId));
 
@@ -67,7 +68,7 @@ public class GameSessionService { //управление игровыми сес
             throw new GameSessionAlreadyStartedException(gameSessionId);
         }
 
-        UserDto user = authServiceClient.getUser(userId);
+        UserDto user = authServiceClient.getUser(userId).getBody();
 
         Player player = Player.builder()
                 .userId(userId)
@@ -79,8 +80,8 @@ public class GameSessionService { //управление игровыми сес
         gameSession.getPlayers().add(player);
         return gameSessionRepository.save(gameSession);
     }
-
-    public GameSession startGameSession(UUID gameSessionId, String userId) {
+@Transactional
+    public GameSession startGameSession(UUID gameSessionId, UUID userId) {
         GameSession gameSession = gameSessionRepository.findById(gameSessionId)
                 .orElseThrow(() -> new GameSessionNotFoundException(gameSessionId));
 

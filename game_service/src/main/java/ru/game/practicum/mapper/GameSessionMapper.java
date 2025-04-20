@@ -3,7 +3,7 @@ package ru.game.practicum.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import ru.game.practicum.dto.GameSessionDto;
+import ru.game.practicum.dto.game_service.GameSessionDto;
 import ru.game.practicum.entity.Card;
 import ru.game.practicum.entity.GameSession;
 

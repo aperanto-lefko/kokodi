@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.game.practicum.dto.GameSessionDto;
-import ru.game.practicum.dto.TurnResultDto;
-import ru.game.practicum.entity.GameSession;
+import ru.game.practicum.dto.game_service.TurnResultDto;
 import ru.game.practicum.entity.TurnResult;
 import ru.game.practicum.mapper.TurnResultMapper;
 import ru.game.practicum.service.TurnService;
@@ -30,7 +28,10 @@ public class TurnController {
     public ResponseEntity<TurnResultDto> makeTurn(
             @PathVariable UUID gameId,
             @RequestHeader("X-User-Id") String userId) {
-        TurnResult turnResult = turnService.makeTurn(gameId, userId);
+        TurnResult turnResult = turnService.makeTurn(gameId, toUUID(userId));
         return ResponseEntity.ok(turnResultMapper.toDto(turnResult));
+    }
+    private static UUID toUUID (String uuid) {
+        return UUID.fromString(uuid);
     }
 }
