@@ -46,8 +46,7 @@ public class TurnService { //обработка ходов игроков
 
         Card card = gameSession.getDeck().get(0); //берем следующую карту
 
-        // Create turn record
-        Turn turn = Turn.builder() //фиксируем ход
+         Turn turn = Turn.builder() //фиксируем ход
                 .gameSession(gameSession)
                 .player(currentPlayer)
                 .playedCard(card)
