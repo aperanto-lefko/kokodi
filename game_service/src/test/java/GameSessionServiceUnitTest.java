@@ -16,6 +16,7 @@ import ru.game.practicum.feign.AuthServiceClient;
 import ru.game.practicum.repository.GameSessionRepository;
 import ru.game.practicum.service.GameSessionService;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
