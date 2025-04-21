@@ -20,6 +20,7 @@ import ru.game.practicum.mapper.UserMapper;
 import ru.game.practicum.service.AuthService;
 import ru.game.practicum.service.UserService;
 
+
 import java.util.UUID;
 
 @RestController

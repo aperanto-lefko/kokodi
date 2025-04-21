@@ -48,7 +48,7 @@ public class TurnServiceImpl implements TurnService { //обработка хо�
             throw new EmptyDeckException(gameSessionId);
         }
 
-        Card card = gameSession.getDeck().get(0); //берем следующую карту
+        Card card = gameSession.getDeck().getFirst(); //берем следующую карту
 
         Turn turn = Turn.builder() //фиксируем ход
                 .gameSession(gameSession)

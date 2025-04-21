@@ -30,10 +30,11 @@ public class ErrorHandler extends BaseErrorHandler {
 
     @Override
     protected String getFriendlyMessage(RuntimeException ex) {
-        return switch (ex) {
-            case InvalidCredentialsException e -> "Invalid login or password";
-            case UserAlreadyExistsException e -> "User already exists";
-            case UserNotFoundException e -> "User not found";
+        String className = ex.getClass().getSimpleName();
+        return switch (className) {
+            case "InvalidCredentialsException" -> "Invalid login or password";
+            case "UserAlreadyExistsException" -> "User already exists";
+            case "UserNotFoundException" -> "User not found";
             default -> "An unexpected error occurred";
         };
     }

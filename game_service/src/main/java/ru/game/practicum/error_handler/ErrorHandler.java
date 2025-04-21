@@ -53,18 +53,23 @@ public class ErrorHandler extends BaseErrorHandler {
 
     @Override
     protected String getFriendlyMessage(RuntimeException ex) {
-        return switch (ex) {
-            case EmptyDeckException e -> "Deck is empty in game session";
-            case GameSessionAlreadyStartedException e -> "Game session has already started";
-            case GameSessionFullException e -> "Game session is full";
-            case GameSessionNotInProgressException e -> "Game session is not in progress";
-            case NotEnoughPlayersException e -> "Not enough players in game session";
-            case NotPlayerTurnException e -> "It's not your turn to play";
-            case UnknownCardTypeException e -> "Unknown card type encountered";
-            case NotGameSessionOwnerException e -> "You are not the owner of this game session";
-            case GameSessionNotFoundException e -> "Game session not found";
-            case PlayerNotFoundException e -> "Player not found";
-            case NoPlayersToStealFromException e -> "No players available to steal from";
+        if (ex == null) {
+            return "An unexpected error occurred";
+        }
+
+        String className = ex.getClass().getSimpleName();
+        return switch (className) {
+            case "EmptyDeckException" -> "Deck is empty in game session";
+            case "GameSessionAlreadyStartedException" -> "Game session has already started";
+            case "GameSessionFullException" -> "Game session is full";
+            case "GameSessionNotInProgressException" -> "Game session is not in progress";
+            case "NotEnoughPlayersException" -> "Not enough players in game session";
+            case "NotPlayerTurnException" -> "It's not your turn to play";
+            case "UnknownCardTypeException" -> "Unknown card type encountered";
+            case "NotGameSessionOwnerException" -> "You are not the owner of this game session";
+            case "GameSessionNotFoundException" -> "Game session not found";
+            case "PlayerNotFoundException" -> "Player not found";
+            case "NoPlayersToStealFromException" -> "No players available to steal from";
             default -> "An unexpected error occurred";
         };
     }
