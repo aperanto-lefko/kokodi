@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import ru.game.practicum.GameServiceApp;
 import ru.game.practicum.dto.game_service.GameState;
 import ru.game.practicum.entity.GameSession;
 import ru.game.practicum.entity.Player;
@@ -17,6 +18,7 @@ import ru.game.practicum.repository.GameSessionRepository;
 import ru.game.practicum.repository.PlayerRepository;
 import ru.game.practicum.repository.TurnRepository;
 import ru.game.practicum.service.CardService;
+import ru.game.practicum.service.CardServiceImpl;
 import ru.game.practicum.service.TurnService;
 
 
@@ -31,10 +33,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(classes = GameServiceApp.class)
 @Transactional
 public class TurnServiceIntegrationTest {
-
     @Autowired
     private TurnService turnService;
 
@@ -47,47 +48,19 @@ public class TurnServiceIntegrationTest {
     @Autowired
     private TurnRepository turnRepository;
 
-    @Autowired
-    private TestEntityManager entityManager;
-
     @MockBean
-    private CardService cardService;
+    private CardServiceImpl cardService;
 
     @Test
     void makeTurn_ShouldProcessTurnCorrectly() {
-
         UUID userId = UUID.randomUUID();
-        GameSession gameSession = GameSession.builder()
-                .state(GameState.IN_PROGRESS)
-                .currentPlayerIndex(0)
-                .deck(new ArrayList<>())
-                .build();
-        gameSession = gameSessionRepository.save(gameSession);
-
-        Player player = Player.builder()
-                .userId(userId)
-                .gameSession(gameSession)
-                .score(0)
-                .blocked(false)
-                .build();
-        player = playerRepository.save(player);
-
-        gameSession.setPlayers(List.of(player));
-
-        PointsCard card = PointsCard.builder()
-                .name("Points-1")
-                .value(1)
-                .gameSession(gameSession)
-                .build();
-        entityManager.persist(card);
-        gameSession.getDeck().add(card);
-        gameSessionRepository.save(gameSession);
+        GameSession gameSession = createGameSession(GameState.IN_PROGRESS, 0);
+        Player player = createPlayer(gameSession, userId, 0, false);
+        PointsCard card = createPointsCard(gameSession, "Points-1", 1);
 
         when(cardService.applyCardEffect(any(), any(), any())).thenReturn(gameSession);
 
-
-        UUID gameSessionId = gameSession.getId();
-        TurnResult result = turnService.makeTurn(gameSessionId, userId);
+        TurnResult result = turnService.makeTurn(gameSession.getId(), userId);
 
         assertNotNull(result);
         assertEquals(userId, result.getCurrentPlayer().getUserId());
@@ -97,73 +70,72 @@ public class TurnServiceIntegrationTest {
         assertEquals(1, turns.size());
         assertEquals(card.getId(), turns.getFirst().getPlayedCard().getId());
 
-        verify(cardService).applyCardEffect(gameSessionId, userId, card);
+        verify(cardService).applyCardEffect(gameSession.getId(), userId, card);
     }
 
     @Test
     void makeTurn_ShouldThrowWhenGameNotInProgress() {
         UUID userId = UUID.randomUUID();
-        GameSession gameSession = GameSession.builder()
-                .state(GameState.WAITING_FOR_PLAYERS)
-                .build();
-        gameSession = gameSessionRepository.save(gameSession);
+        GameSession gameSession = createGameSession(GameState.WAITING_FOR_PLAYERS, 0);
 
-        UUID gameSessionId = gameSession.getId();
         assertThrows(GameSessionNotInProgressException.class, () ->
-                turnService.makeTurn(gameSessionId, userId));
+                turnService.makeTurn(gameSession.getId(), userId));
     }
 
     @Test
     void makeTurn_ShouldThrowWhenNotPlayerTurn() {
-
         UUID currentPlayerId = UUID.randomUUID();
         UUID otherPlayerId = UUID.randomUUID();
+        GameSession gameSession = createGameSession(GameState.IN_PROGRESS, 0);
 
-        GameSession gameSession = GameSession.builder()
-                .state(GameState.IN_PROGRESS)
-                .currentPlayerIndex(0)
-                .deck(new ArrayList<>())
-                .build();
-        gameSession = gameSessionRepository.save(gameSession);
+        Player player1 = createPlayer(gameSession, currentPlayerId, 0, false);
+        Player player2 = createPlayer(gameSession, otherPlayerId, 0, false);
 
-        Player player1 = Player.builder()
-                .userId(currentPlayerId)
-                .gameSession(gameSession)
-                .build();
-        Player player2 = Player.builder()
-                .userId(otherPlayerId)
-                .gameSession(gameSession)
-                .build();
-        playerRepository.saveAll(List.of(player1, player2));
-        gameSession.setPlayers(List.of(player1, player2));
-        gameSessionRepository.save(gameSession);
-
-        UUID gameSessionId = gameSession.getId();
         assertThrows(NotPlayerTurnException.class, () ->
-                turnService.makeTurn(gameSessionId, otherPlayerId));
+                turnService.makeTurn(gameSession.getId(), otherPlayerId));
     }
 
     @Test
     void makeTurn_ShouldThrowWhenDeckEmpty() {
         UUID userId = UUID.randomUUID();
-        GameSession gameSession = GameSession.builder()
-                .state(GameState.IN_PROGRESS)
-                .currentPlayerIndex(0)
-                .deck(new ArrayList<>())
-                .build();
-        gameSession = gameSessionRepository.save(gameSession);
+        GameSession gameSession = createGameSession(GameState.IN_PROGRESS, 0);
+        createPlayer(gameSession, userId, 0, false);
 
+        assertThrows(EmptyDeckException.class, () ->
+                turnService.makeTurn(gameSession.getId(), userId));
+    }
+
+    private GameSession createGameSession(GameState state, int currentPlayerIndex) {
+        GameSession gameSession = GameSession.builder()
+                .state(state)
+                .currentPlayerIndex(currentPlayerIndex)
+                .deck(new ArrayList<>())
+                .players(new ArrayList<>())
+                .build();
+        return gameSessionRepository.save(gameSession);
+    }
+
+    private Player createPlayer(GameSession gameSession, UUID userId, int score, boolean blocked) {
         Player player = Player.builder()
                 .userId(userId)
                 .gameSession(gameSession)
+                .score(score)
+                .blocked(blocked)
                 .build();
-        playerRepository.save(player);
-        gameSession.setPlayers(List.of(player));
+        Player savedPlayer = playerRepository.save(player);
+        gameSession.getPlayers().add(savedPlayer);
         gameSessionRepository.save(gameSession);
+        return savedPlayer;
+    }
 
-        // Сохраняем ID в отдельную final переменную
-        UUID gameSessionId = gameSession.getId();
-        assertThrows(EmptyDeckException.class, () ->
-                turnService.makeTurn(gameSessionId, userId));
+    private PointsCard createPointsCard(GameSession gameSession, String name, int value) {
+        PointsCard card = PointsCard.builder()
+                .name(name)
+                .value(value)
+                .gameSession(gameSession)
+                .build();
+        gameSession.getDeck().add(card);
+        gameSessionRepository.save(gameSession);
+        return card;
     }
 }

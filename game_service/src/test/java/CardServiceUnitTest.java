@@ -14,7 +14,7 @@ import ru.game.practicum.exception.PlayerNotFoundException;
 import ru.game.practicum.exception.UnknownCardTypeException;
 import ru.game.practicum.repository.GameSessionRepository;
 import ru.game.practicum.repository.PlayerRepository;
-import ru.game.practicum.service.CardService;
+import ru.game.practicum.service.CardServiceImpl;
 
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class CardServiceUnitTest {
     private PlayerRepository playerRepository;
 
     @InjectMocks
-    private CardService cardService;
+    private CardServiceImpl cardService;
 
     @Test
     void applyPointsCardEffect_ShouldIncreasePlayerScore() {

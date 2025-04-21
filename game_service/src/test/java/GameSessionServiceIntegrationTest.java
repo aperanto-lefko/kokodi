@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
+import ru.game.practicum.GameServiceApp;
 import ru.game.practicum.dto.auth_service.UserDto;
 import ru.game.practicum.dto.game_service.GameState;
 import ru.game.practicum.entity.ActionCard;
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(classes = GameServiceApp.class)
 @Transactional
 public class GameSessionServiceIntegrationTest {
     @Autowired

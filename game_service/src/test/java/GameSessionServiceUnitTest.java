@@ -15,6 +15,7 @@ import ru.game.practicum.exception.GameSessionNotFoundException;
 import ru.game.practicum.feign.AuthServiceClient;
 import ru.game.practicum.repository.GameSessionRepository;
 import ru.game.practicum.service.GameSessionService;
+import ru.game.practicum.service.GameSessionServiceImpl;
 
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class GameSessionServiceUnitTest {
     private AuthServiceClient authServiceClient;
 
     @InjectMocks
-    private GameSessionService gameSessionService;
+    private GameSessionServiceImpl gameSessionService;
 
     @Test
     void createGameSession_ShouldCreateNewSession() {

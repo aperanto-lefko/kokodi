@@ -16,7 +16,9 @@ import ru.game.practicum.exception.NotPlayerTurnException;
 import ru.game.practicum.repository.GameSessionRepository;
 import ru.game.practicum.repository.TurnRepository;
 import ru.game.practicum.service.CardService;
+import ru.game.practicum.service.CardServiceImpl;
 import ru.game.practicum.service.TurnService;
+import ru.game.practicum.service.TurnServiceImpl;
 
 
 import java.util.ArrayList;
@@ -40,10 +42,10 @@ public class TurnServiceUnitTest {
     private TurnRepository turnRepository;
 
     @Mock
-    private CardService cardService;
+    private CardServiceImpl cardService;
 
     @InjectMocks
-    private TurnService turnService;
+    private TurnServiceImpl turnService;
 
     @Test
     void makeTurn_ShouldProcessTurnSuccessfully() {
