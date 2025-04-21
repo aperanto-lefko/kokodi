@@ -100,7 +100,7 @@ public class GameSessionService { //управление игровыми сес
         return gameSessionRepository.save(gameSession);
     }
 
-    private void initializeDeck(GameSession gameSession) {
+    public void initializeDeck(GameSession gameSession) {
         List<Card> deck = new ArrayList<>();
 
         // Points Cards
@@ -134,7 +134,7 @@ public class GameSessionService { //управление игровыми сес
         gameSession.setDeck(deck);
     }
 
-    private void shuffleDeck(GameSession gameSession) {
+    public void shuffleDeck(GameSession gameSession) {
         Collections.shuffle(gameSession.getDeck());
     }
 

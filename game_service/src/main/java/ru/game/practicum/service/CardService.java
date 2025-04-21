@@ -59,14 +59,14 @@ public class CardService { //работа с картами и их эффект
 
     //подсчет очков за карту
     @Transactional
-    private void applyPointsCardEffect(Player player, PointsCard card) {
+    public void applyPointsCardEffect(Player player, PointsCard card) {
         player.setScore(player.getScore() + card.getValue());
         playerRepository.save(player);
     }
 
     //реализация действия карты action в зависимости от назначения
     //TODO переделать на фабрику
-    private void applyActionCardEffect(GameSession gameSession, Player currentPlayer, ActionCard card) {
+    public void applyActionCardEffect(GameSession gameSession, Player currentPlayer, ActionCard card) {
         switch (card.getName()) {
             case "Block":
                 applyBlockEffect(gameSession);
@@ -82,14 +82,14 @@ public class CardService { //работа с картами и их эффект
         }
     }
 
-    private void applyBlockEffect(GameSession gameSession) {
+    public void applyBlockEffect(GameSession gameSession) {
         int nextPlayerIndex = (gameSession.getCurrentPlayerIndex() + 1) % gameSession.getPlayers().size();
         Player nextPlayer = gameSession.getPlayers().get(nextPlayerIndex);
         nextPlayer.setBlocked(true);
         playerRepository.save(nextPlayer);
     }
 
-    private void applyStealEffect(GameSession gameSession, Player currentPlayer, int value) {
+    public void applyStealEffect(GameSession gameSession, Player currentPlayer, int value) {
         Player targetPlayer = gameSession.getPlayers().stream()
                 .filter(p -> !p.getUserId().equals(currentPlayer.getUserId()))
                 .max(Comparator.comparingInt(Player::getScore))
@@ -103,13 +103,13 @@ public class CardService { //работа с картами и их эффект
         playerRepository.save(currentPlayer);
     }
 
-    private void applyDoubleDownEffect(Player player) {
+    public void applyDoubleDownEffect(Player player) {
         int newScore = Math.min(player.getScore() * 2, 30);
         player.setScore(newScore);
         playerRepository.save(player);
     }
 
-    private void checkWinCondition(GameSession gameSession) {
+    public void checkWinCondition(GameSession gameSession) {
         boolean hasWinner = gameSession.getPlayers().stream()
                 .anyMatch(p -> p.getScore() >= 30);
 
@@ -118,7 +118,7 @@ public class CardService { //работа с картами и их эффект
         }
     }
 
-    private void moveToNextPlayer(GameSession gameSession) {
+    public void moveToNextPlayer(GameSession gameSession) {
         int nextIndex = gameSession.getCurrentPlayerIndex();
         int playersCount = gameSession.getPlayers().size();
 
