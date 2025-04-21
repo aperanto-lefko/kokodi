@@ -9,7 +9,9 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 
@@ -20,6 +22,8 @@ import java.util.UUID;
 @DiscriminatorColumn(name = "card_type")
 @Data
 @SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
