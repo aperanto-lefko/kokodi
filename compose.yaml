@@ -3,7 +3,7 @@ services:
     image: postgres:16.1
     container_name: game-db
     ports:
-      - "5433:5432"
+      - "5436:5432"
     environment:
       - POSTGRES_DB=game-db
       - POSTGRES_USER=game
