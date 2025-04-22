@@ -71,7 +71,7 @@
     - Статус меняется на `FINISHED`
 
 ### Порядок запуска
-
+  - Развернуть базы в docker (compose.yaml)
   - DiscoveryServer
   - ConfigServer
 
