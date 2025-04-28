@@ -1,4 +1,5 @@
 services:
+
   game-db:
     image: postgres:16.1
     container_name: game-db
@@ -10,9 +11,13 @@ services:
       - POSTGRES_PASSWORD=game
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-      timeout: 5s
-      interval: 5s
-      retries: 10
+      timeout: 10s
+      interval: 10s
+      retries: 15
+    networks:
+      - microservices-net
+
+
   auth-db:
     image: postgres:16.1
     container_name: auth-db
@@ -24,6 +29,82 @@ services:
       - POSTGRES_PASSWORD=auth
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 10s
+      interval: 10s
+      retries: 15
+    networks:
+      - microservices-net
+
+
+  discovery-server:
+    build:
+      context: .
+      dockerfile: infra/discovery_server/Dockerfile
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 10s
       timeout: 5s
-      interval: 5s
-      retries: 10
+      retries: 5
+    networks:
+      - microservices-net
+
+
+  config-server:
+    build:
+      context: .
+      dockerfile: infra/config_server/Dockerfile
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    networks:
+      - microservices-net
+
+
+  game-service:
+    build:
+      context: .
+      dockerfile: game_service/Dockerfile
+    container_name: game-service
+    depends_on:
+      config-server:
+        condition: service_healthy
+      game-db:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka/
+
+    networks:
+      - microservices-net
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth_service/Dockerfile
+    container_name: auth-service
+    depends_on:
+      config-server:
+        condition: service_healthy
+      auth-db:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://discovery-server:8761/eureka/
+
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge
