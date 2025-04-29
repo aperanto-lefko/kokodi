@@ -1,9 +1,9 @@
 spring:
   datasource:
-#    url: jdbc:postgresql://localhost:5435/auth-db
-    url: jdbc:postgresql://auth-db:5432/auth-db
-    username: auth
-    password: auth
+    #url: jdbc:postgresql://localhost:5436/game-db
+    url: jdbc:postgresql://game-db:5432/game-db
+    username: game
+    password: game
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5 #Настройки пула соединений (HikariCP — дефолтный пул в Spring Boot).
@@ -17,10 +17,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-jwt:
-  secret: your-256-bit-secret-change-this-to-secure-your-application
-  expiration: 86400000 # 24 hours in milliseconds
+feign:
+  client:
+    config:
+      auth-service:
+        connectTimeout: 5000
+        readTimeout: 5000
 
-logging:
-  level:
-    org.springframework.security: DEBUG
+security:
+  jwt:
+    secret: ${JWT_SECRET:defaultSecretKey}
+    expiration: 86400000 # 24 hours

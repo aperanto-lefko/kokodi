@@ -8,8 +8,8 @@ import ru.game.practicum.dto.auth_service.UserDto;
 
 import java.util.UUID;
 
-@FeignClient(name = "auth-service",fallback = AuthServiceFallback.class)
+@FeignClient(name = "auth-service",path = "/api/auth", fallback = AuthServiceFallback.class)
 public interface AuthServiceClient {
-    @GetMapping("/api/users/{userId}")
+    @GetMapping("/users/{userId}")
     ResponseEntity<UserDto> getUser(@PathVariable("userId") UUID userId);
 }

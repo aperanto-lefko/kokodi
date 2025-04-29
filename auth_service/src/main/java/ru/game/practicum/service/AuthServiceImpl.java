@@ -45,6 +45,7 @@ public class AuthServiceImpl implements AuthService {
             log.error("Authentication failed for user: {}", request.getLogin(), e);
             throw new InvalidCredentialsException();
         } catch (Exception e) {
+            log.error("Unexpected error during authentication", e);
             throw new InvalidCredentialsException();
         }
     }

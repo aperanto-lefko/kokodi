@@ -9,10 +9,18 @@
 ### Бизнес-микросервисы:
 - **Auth Service** - управление пользователями и аутентификацией
 - **Game Service** - игровая логика и сессии
+- **Gateway Service** - единая точка входа для API
 
 ### Инфраструктурные сервисы:
 - **Config Server** - централизованное хранение конфигураций
 - **Eureka Server** - сервис обнаружения и регистрации микросервисов
+
+### Стек технологий
+- Spring Boot 3.x
+- Spring Cloud Gateway
+- Eureka Service Discovery
+- Feign Client
+- Docker + Docker Compose
 
 Сервисы зарегистрированы в **Eureka Server** и используют:
 - Централизованную конфигурацию
@@ -69,11 +77,19 @@
 5. **Завершение игры**
     - При достижении 30+ очков
     - Статус меняется на `FINISHED`
+   
+## Docker развертывание
 
-### Порядок запуска
+1. Собрать и запустить все сервисы:
+```bash
+docker compose build --no-cache && docker compose up
+```
+
+### Порядок запуска локально
   - Развернуть базы в docker (compose.yaml)
   - DiscoveryServer
   - ConfigServer
+  - GatewayService
 
 далее в любом порядке (после паузы)
 
