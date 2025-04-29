@@ -1,7 +1,7 @@
 spring:
   datasource:
-    #url: jdbc:postgresql://localhost:5436/game-db
-    url: jdbc:postgresql://game-db:5432/game-db
+    url: jdbc:postgresql://localhost:5436/game-db
+    #url: jdbc:postgresql://game-db:5432/game-db
     username: game
     password: game
     driver-class-name: org.postgresql.Driver
@@ -21,7 +21,8 @@ feign:
   client:
     config:
       auth-service:
-        url: http://auth-service:8080 #переделать
+        connectTimeout: 5000
+        readTimeout: 5000
 
 security:
   jwt:
