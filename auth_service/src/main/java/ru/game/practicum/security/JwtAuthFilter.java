@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +18,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final CustomUserDetailsService userDetailsService;
@@ -34,8 +36,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String jwt = authHeader.substring(7);
+        log.debug("JWT Token extracted: {}", jwt);
         if (jwtProvider.validateToken(jwt)) {
             String username = jwtProvider.getUsernameFromToken(jwt);
+            log.debug("JWT token is valid, Username: {}", username);
             var userDetails = userDetailsService.loadUserByUsername(username);
 
             var authToken = new UsernamePasswordAuthenticationToken(
@@ -45,8 +49,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             );
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
-        }
 
+        } else {
+            log.debug("Invalid JWT Token");
+        }
         filterChain.doFilter(request, response);
     }
 }

@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
+@Slf4j
 public class JwtProvider {
     @Value("${jwt.secret}")
     private String secret;
@@ -50,9 +52,19 @@ public class JwtProvider {
                     .build()
                     .parseClaimsJws(token);
             return true;
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+
+            log.error("JWT token is expired: {}", token, e);
+        } catch (io.jsonwebtoken.MalformedJwtException e) {
+
+            log.error("JWT token is malformed: {}", token, e);
+        } catch (io.jsonwebtoken.SignatureException e) {
+
+            log.error("JWT signature is invalid: {}", token, e);
         } catch (Exception e) {
-            return false;
+            log.error("Invalid JWT token: {}", token, e);
         }
+        return false;
     }
 
     private Key getSigningKey() {

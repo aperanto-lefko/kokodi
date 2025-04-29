@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5435/auth-db
-    #url: jdbc:postgresql://auth-db:5432/auth-db
+    #url: jdbc:postgresql://localhost:5435/auth-db
+    url: jdbc:postgresql://auth-db:5432/auth-db
     username: auth
     password: auth
     driver-class-name: org.postgresql.Driver
@@ -18,7 +18,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 jwt:
-  secret: your-256-bit-secret-change-this-to-secure-your-application
+  secret: PCiMTSVb+H8qnA4g4ZgfQoTMJbAbPrhxK3zCzkK6j0Q=
   expiration: 86400000 # 24 hours in milliseconds
 
 logging:

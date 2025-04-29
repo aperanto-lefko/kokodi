@@ -20,10 +20,10 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByLogin(request.getLogin())) {
             throw new UserAlreadyExistsException(request.getLogin());
         }
-
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
         User user = User.builder()
                 .login(request.getLogin())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(encodedPassword)
                 .name(request.getName())
                 .build();
 
